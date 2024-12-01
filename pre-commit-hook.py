@@ -84,7 +84,7 @@ def main():
     
     ### Send to OpenAI for review
     # print("\n--- Sending changes to OpenAI for review... ---\n")
-    # reviews = call_openai_api(diff)
+    reviews = call_openai_api(diff)
     
     ### Print OpenAI's response
     # print("\n--- OpenAI Review ---\n")
