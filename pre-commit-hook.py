@@ -69,7 +69,6 @@ def call_openai_api(content):
     )
 
     openai_result =  completion.choices[0].message.parsed
-    print('MESS: ', openai_result)
     return openai_result.model_dump()
 
 
