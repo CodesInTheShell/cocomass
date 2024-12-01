@@ -1,32 +1,3 @@
-### Copy the pre-commit shell script to .git/hooks and make it executable
-# pwd
-# chmod +x /home/dantebytes/Documents/REPO/cocomass/.git/hooks/pre-commit
-
-
-# import subprocess
-
-# def get_committed_files():
-#     """Gets a list of files staged for the next commit."""
-#     try:
-#         result = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True)
-#         return result.stdout.strip().splitlines()
-#     except subprocess.CalledProcessError as e:
-#         print(f"Error running git diff: {e}")
-#         return []
-
-# # Example usage:
-# if __name__ == "__main__":
-#     print("Running Python pre-commit script...")
-#     files_to_commit = get_committed_files()
-#     if files_to_commit:
-#         print("Files staged for commit:")
-#         for file in files_to_commit:
-#             print(file)
-#     else:
-#         print("No files staged for commit.")
-
-
-
 #!/usr/bin/env python3
 
 import os
@@ -102,25 +73,24 @@ def call_openai_api(content):
 
 
 def main():
-    # Get the staged changes
     diff = get_git_diff()
     if not diff:
         print("No changes to commit.")
         return 0  # Allow the commit to proceed
     
-    # Print the changes
-    print("\n--- Staged Changes ---\n")
-    print(diff)
+    ### Print the changes
+    # print("\n--- Staged Changes ---\n")
+    # print(diff)
     
-    # Send to OpenAI for review
-    print("\n--- Sending changes to OpenAI for review... ---\n")
-    reviews = call_openai_api(diff)
+    ### Send to OpenAI for review
+    # print("\n--- Sending changes to OpenAI for review... ---\n")
+    # reviews = call_openai_api(diff)
     
-    # Print OpenAI's response
-    print("\n--- OpenAI Review ---\n")
-    print(reviews)
+    ### Print OpenAI's response
+    # print("\n--- OpenAI Review ---\n")
+    # print(reviews)
 
-    # Send to server
+    ### Send to server
     assesments = reviews.get('assesments')
     if len(assesments) > 0:
         commit_message = get_commit_message()

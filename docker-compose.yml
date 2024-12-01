@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.0
+    ports:
+      - "27017:27017"
+    expose:
+      - "27107"
+    volumes:
+      - /home/dantebytes/Documents/REPO/someMounted/mounted-data:/data/db/  # sudo rm -rf mounted-data/
+    logging:
+      driver: "none"
+
+volumes:
+  mongo-data:

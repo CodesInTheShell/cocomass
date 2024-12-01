@@ -1,0 +1,30 @@
+#!/bin/bash
+
+### Copy this file to .git/hooks/pre-commit and be sure it is executable, run below command
+# chmod +x .git/hooks/pre-commit
+
+
+echo "Running pre-commit hook..."
+
+export OPENAI_API_KEY="sk-proj-YOUR_OPEN_AI_API_KEY"
+PYTHON_SCRIPT="/home/dantebytes/path/to/cocomass/pre-commit-hook.py"
+VENV_PATH="/home/dantebytes/path/to/cocomass/venv/bin/python"
+
+# Verify the paths
+if [ ! -f "$PYTHON_SCRIPT" ]; then
+  echo "Error: Python script not found at $PYTHON_SCRIPT"
+  exit 1
+fi
+
+if [ ! -f "$VENV_PATH" ]; then
+  echo "Error: Python executable not found at $VENV_PATH"
+  exit 1
+fi
+
+# Run the Python script
+echo "Executing Python script..."
+"$VENV_PATH" "$PYTHON_SCRIPT"
+RESULT=$?
+
+echo "Python script finished with exit code $RESULT"
+exit $RESULT
