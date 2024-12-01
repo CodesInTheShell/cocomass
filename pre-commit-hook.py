@@ -33,8 +33,17 @@ import os
 import subprocess
 import openai
 
-# Configure your OpenAI API Key here
-OPENAI_API_KEY = "your_openai_api_key"
+### MODEL
+from typing import List
+from pydantic import BaseModel
+
+class Assesment(BaseModel):
+    filename: str
+    comment: str
+
+class Assessments(BaseModel):
+    assesments: List[Assesment]
+
 
 def get_git_diff():
     """Get the staged changes for the current commit."""
@@ -56,16 +65,18 @@ def call_openai_api(content):
     from openai import OpenAI
     client = OpenAI()
 
-    completion = client.chat.completions.create(
+    completion = client.beta.chat.completions.parse(
         model="gpt-4o-mini",
         messages=[
-                {"role": "system", "content": "You are a code reviewer. Point out any issues or suggestions for improvement."},
+                {"role": "system", "content": "You are a code reviewer. Point out any issues or suggestions for improvement. Multiple assessment in one file is possible."},
                 {"role": "user", "content": f"Please review the following code changes:\n\n{content}"}
-            ]
+            ],
+        response_format=Assessments,
     )
 
-    print('MESS: ', completion.choices[0].message)
-    return completion.choices[0].message
+    openai_result =  completion.choices[0].message.parsed
+    print('MESS: ', openai_result)
+    return openai_result.model_dump()
 
 
 def main():
