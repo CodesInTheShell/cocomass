@@ -32,6 +32,7 @@
 import os
 import subprocess
 import openai
+import requests
 
 ### MODEL
 from typing import List
@@ -132,6 +133,11 @@ def main():
                 "commit_hash": commit_hash,
             }
             print('DATA: ', data)
+
+            url = os.environ.get('COCOMASS_API_URL', 'http://127.0.0.1:5000/assessments')
+            headers = {"Content-Type": "application/json"}
+            data = data
+            response = requests.post(url, headers=headers, json=data)
 
     
     # Allow or block the commit
