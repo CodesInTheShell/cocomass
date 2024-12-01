@@ -1,3 +1,3 @@
 # cocomass
 
-pre-commit AI assistant.
+pre-commit AI assistant..
