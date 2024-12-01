@@ -13,7 +13,7 @@ Cocomass is a two piece software.
 2. The server - It is the pre-commit-server.py where you can view the code assessments.
 
 ### Instructions
-1. Copy the pre-commit file of this repo to .get/hooks/pre-commit and be sure it is executable.
+1. Copy the pre-commit file of this repo to .get/hooks/pre-commit (THIS HOOKS FOLDER IS IN THE REPO YOUR ARE WORKING ON AND NOT THIS) and be sure it is executable.
 chmod +x .git/hooks/pre-commit
 
 2. Set the environment variables and path on the .git/hooks/pre-commit file
