@@ -104,7 +104,6 @@ def main():
                 "commit_message": commit_message,
                 "commit_hash": commit_hash,
             }
-            print('DATA: ', data)
 
             url = os.environ.get('COCOMASS_API_URL', 'http://127.0.0.1:5000/assessments')
             headers = {"Content-Type": "application/json"}
