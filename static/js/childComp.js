@@ -39,7 +39,7 @@ export default {
     },
     template: /*html*/ `
         <div class="container mt-4">
-            <h2 class="text-center mb-4">Cocomass Code Commit Reviews</h2>
+            <h2 class="text-center mb-4">Code Commit Reviews</h2>
             <template v-if="hasAssessments">
 
                 <div class="input-group input-group-sm mb-3">
@@ -52,7 +52,7 @@ export default {
                     <table class="table table-bordered table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
-                                <th scope="col">Filename</th>
+                                <th scope="col">Filename and Criticality</th>
                                 <th scope="col">Commit Message</th>
                                 <th scope="col">Commit Hash</th>
                                 <th scope="col">Created At</th>
@@ -61,7 +61,23 @@ export default {
                         </thead>
                         <tbody>
                             <tr v-for="assessment in assessments" :key="assessment._id">
-                                <td>{{ assessment.filename || 'N/A' }}</td>
+                                <td>
+                                    {{ assessment.filename || 'N/A' }}
+                                    <p class="m-2">
+                                        <span 
+                                            class="badge bg-secondary"
+                                            :class="{
+                                                'bg-success': assessment.criticality === 'minor',
+                                                'bg-info': assessment.criticality === 'moderate',
+                                                'bg-warning': assessment.criticality === 'major',
+                                                'bg-danger text-light': assessment.criticality === 'critical',
+                                                'bg-secondary': !assessment.criticality
+                                            }"
+                                        >
+                                            {{assessment.criticality || 'N/A'}}
+                                        </span>
+                                    </p>
+                                </td>
                                 <td>{{ assessment.commit_message || 'No commit message' }}</td>
                                 <td>{{ assessment.commit_hash || 'N/A' }}</td>
                                 <td>{{ assessment.created_at || 'N/A' }}</td>

@@ -20,7 +20,7 @@ services:
     expose:
       - "27107"
     volumes:
-      - /home/dantebytes/Documents/REPO/someMounted/mounted-data:/data/db/  # sudo rm -rf mounted-data/
+      - ${MOUNTED_DATA}:/data/db/
     logging:
       driver: "none"
 

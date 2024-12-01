@@ -1,6 +1,6 @@
 function newVueStore() {
     return {
-        testStoreText: "AI pre-commit code reviewer and assistant",
+        testStoreText: "A pre-commit code reviewer and assistant - AI code assessment tool",
     }
 }
 

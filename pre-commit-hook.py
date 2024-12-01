@@ -12,6 +12,7 @@ from pydantic import BaseModel
 class Assessment(BaseModel):
     filename: str
     comment: str
+    criticality: str
 
 class Assessments(BaseModel):
     assesments: List[Assessment]
@@ -61,7 +62,7 @@ def call_openai_api(content):
     completion = client.beta.chat.completions.parse(
         model="gpt-4o-mini",
         messages=[
-                {"role": "system", "content": "You are a code reviewer. Point out any issues or suggestions for improvement. Multiple assessment in one file is possible. Your comment should be in markdown format."},
+                {"role": "system", "content": "You are a code reviewer. Point out any issues or suggestions for improvement. Multiple assessment in one file is possible. Your comment should be in markdown format. Assess criticality of the issue, the criticality should either be minor, moderate, major or critical."},
                 {"role": "user", "content": f"Please review the following code changes:\n\n{content}"}
             ],
         response_format=Assessments,
@@ -99,6 +100,7 @@ def main():
             data = {
                 "filename": a.get('filename', ''),
                 "comment": a.get('comment', ''),
+                "criticality": a.get('criticality', ''),
                 "commit_message": commit_message,
                 "commit_hash": commit_hash,
             }

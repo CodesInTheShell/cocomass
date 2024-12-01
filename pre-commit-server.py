@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime
+from pymongo import DESCENDING
 
 app = Flask(__name__)
 
@@ -32,6 +33,7 @@ def create_assessment():
         "comment": data["comment"],
         "commit_message": data["commit_message"],
         "commit_hash": data["commit_hash"],
+        "criticality": data.get("criticality", "minor"),
         "created_at": datetime.utcnow()
     }
     result = assessments_collection.insert_one(assessment)
@@ -44,11 +46,12 @@ def get_assessments():
     query = {}
 
     queryValue = request.args.get('query', None)
+    queryLimit = int(request.args.get('limit', 100))
 
     if queryValue:
         query['commit_hash'] = queryValue
 
-    assessments = list(assessments_collection.find(query))
+    assessments = list(assessments_collection.find(query).sort("created_at", DESCENDING).limit(queryLimit))
     assessments = [serialize_doc(a) for a in assessments]
 
     return jsonify(assessments), 200
@@ -72,6 +75,8 @@ def update_assessment(assessment_id):
         update_fields["commit_message"] = data["commit_message"]
     if "commit_hash" in data:
         update_fields["commit_hash"] = data["commit_hash"]
+    if "criticality" in data:
+        update_fields["criticality"] = data["criticality"]
 
     if not update_fields:
         return jsonify({"error": "No fields to update provided"}), 400
@@ -97,7 +102,7 @@ if __name__ == "__main__":
     app.run('0.0.0.0', debug=True)
 
 ## Create
-# curl -X POST -H "Content-Type: application/json" -d '{"filename": "example.txt", "comment": "This is a test comment", "commit_message": "Initial commit", "commit_hash": "abc123"}' http://127.0.0.1:5000/assessments
+# curl -X POST -H "Content-Type: application/json" -d '{"filename": "example.txt", "comment": "This is a test comment", "commit_message": "Initial commit", "criticality": "minor","commit_hash": "abc123"}' http://127.0.0.1:5000/assessments
 
 ## List all
 # curl http://127.0.0.1:5000/assessments
