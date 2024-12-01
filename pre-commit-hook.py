@@ -32,6 +32,20 @@ def get_git_diff():
         print(f"Error while running git diff: {e.stderr}")
         return ""
 
+def get_latest_commit_message():
+    """Get the latest commit message."""
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--pretty=%B"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"Error while fetching the latest commit message: {e.stderr}")
+        return None
+
 def get_commit_message():
     """Get the commit message being used."""
     try:
@@ -105,7 +119,7 @@ def main():
     assessments = reviews.get('assessments')
     if len(assessments) > 0:
         print(f'Sending {len(assessments)} number of assesment to the Cocomass server.')
-        commit_message = get_commit_message()
+        commit_message = get_latest_commit_message()
         commit_hash = get_current_commit_hash()
         for a in assessments:
             data = {
