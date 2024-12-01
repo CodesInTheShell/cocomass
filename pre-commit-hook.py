@@ -117,4 +117,9 @@ def main():
     return 0  # Allow the commit to proceed
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"--------- COCOMASS PRE-COMMIT ERROR --------- /n")
+        print(f"An error occurred: {e}/n")
+        print(f"Check if cocomass server is running./n")
