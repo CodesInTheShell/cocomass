@@ -15,7 +15,7 @@ class Assessment(BaseModel):
     criticality: str
 
 class Assessments(BaseModel):
-    assesments: List[Assessment]
+    assessments: List[Assessment]
 
 
 def get_git_diff():
@@ -102,12 +102,12 @@ def main():
     # print(reviews)
 
     ### Send to server
-    assesments = reviews.get('assesments')
-    if len(assesments) > 0:
-        print(f'Sending {len(assesments)} number of assesment to the Cocomass server.')
+    assessments = reviews.get('assessments')
+    if len(assessments) > 0:
+        print(f'Sending {len(assessments)} number of assesment to the Cocomass server.')
         commit_message = get_commit_message()
         commit_hash = get_current_commit_hash()
-        for a in assesments:
+        for a in assessments:
             data = {
                 "filename": a.get('filename', ''),
                 "comment": a.get('comment', ''),
