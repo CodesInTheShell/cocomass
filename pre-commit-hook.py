@@ -104,6 +104,7 @@ def main():
     ### Send to server
     assesments = reviews.get('assesments')
     if len(assesments) > 0:
+        print(f'Sending {len(assesments)} number of assesment to the Cocomass server.')
         commit_message = get_commit_message()
         commit_hash = get_current_commit_hash()
         for a in assesments:
@@ -119,6 +120,8 @@ def main():
             headers = {"Content-Type": "application/json"}
             data = data
             response = requests.post(url, headers=headers, json=data)
+    else:
+        print(f'No assessment generate upon analyzing the changes for this commit.')
 
     
     # Allow or block the commit
