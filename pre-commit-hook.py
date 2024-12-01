@@ -55,7 +55,10 @@ def get_commit_message():
         return "Commit message file not found."
 
 def get_current_commit_hash():
-    """Get the current commit hash (HEAD)."""
+    """
+    Get the current commit hash (HEAD). This works with post-commit.
+    Because pre-commit is one message behind.
+    """
     try:
         result = subprocess.run(
             ["git", "rev-parse", "HEAD"],
