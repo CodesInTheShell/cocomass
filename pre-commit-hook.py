@@ -8,6 +8,17 @@ import requests
 ### MODEL
 from typing import List
 from pydantic import BaseModel
+from ollama import chat
+from ollama import ChatResponse
+
+
+### PROMPTS
+SYSTEM_PROMPTS = """You are a code reviewer.
+                    Analyze and point out any issues or suggestions for improvement. 
+                    Multiple assessment in one file is possible. 
+                    Your comment should be in markdown format. 
+                    You do not have to generate comment for a file if there is no issues or suggestion found.
+                    Assess criticality of the issue, the criticality should either be minor, moderate, major or critical."""
 
 class Assessment(BaseModel):
     filename: str
@@ -56,8 +67,7 @@ def get_commit_message():
 
 def get_current_commit_hash():
     """
-    Get the current commit hash (HEAD). This works with post-commit.
-    Because pre-commit is one message behind.
+    Get the current commit hash (HEAD).
     """
     try:
         result = subprocess.run(
@@ -70,6 +80,31 @@ def get_current_commit_hash():
     except subprocess.CalledProcessError:
         return "HEAD not yet committed."
 
+def call_ollama_api(content):
+    """Send the code changes to Ollama for review."""
+    
+    response: ChatResponse = chat(
+        model='llama3.2', 
+        messages=[
+            {
+                'role': 'system',
+                'content': SYSTEM_PROMPTS,
+            },
+            {
+                'role': 'user',
+                'content': f'Please review the following code changes:\n\n{content}',
+            },
+        ],
+        format='json',
+        stream=False,
+    )
+    print('OLL1: ', response['message']['content'])
+    # or access fields directly from the response object
+    print('OLL2: ',response.message.content)
+    return response.message.content
+
+
+
 def call_openai_api(content):
     """Send the code changes to OpenAI for review."""
     
@@ -81,12 +116,7 @@ def call_openai_api(content):
         messages=[
                 {
                     "role": "system", 
-                    "content": """You are a code reviewer.
-                    Analyze and point out any issues or suggestions for improvement. 
-                    Multiple assessment in one file is possible. 
-                    Your comment should be in markdown format. 
-                    You do not have to generate comment for a file if there is no issues or suggestion found.
-                    Assess criticality of the issue, the criticality should either be minor, moderate, major or critical."""
+                    "content": SYSTEM_PROMPTS
                 },
                 {
                     "role": "user", 
@@ -110,13 +140,18 @@ def main():
     # print("\n--- Staged Changes ---\n")
     # print(diff)
     
-    ### Send to OpenAI for review
-    # print("\n--- Sending changes to OpenAI for review... ---\n")
-    reviews = call_openai_api(diff)
+    ### Send to LLM for review
+    cocomass_llm = os.environ.get('COCOMASS_LLM', 'ollama')
+    print(f"\n--- Sending changes to LMM using {cocomass_llm} for review... ---\n")
+
+    if cocomass_llm == 'openai':
+        reviews = call_openai_api(diff)
+    elif cocomass_llm == 'ollama':
+        reviews = call_ollama_api(diff)
     
-    ### Print OpenAI's response
-    # print("\n--- OpenAI Review ---\n")
-    # print(reviews)
+    ### Print LLM's response
+    # print("\n--- LLM Review ---\n")
+    print('REVIEWS: ', reviews)
 
     ### Send to server
     assessments = reviews.get('assessments')
@@ -133,10 +168,10 @@ def main():
                 "commit_hash": commit_hash,
             }
 
-            url = os.environ.get('COCOMASS_API_URL', 'http://127.0.0.1:5000/assessments')
+            url = os.environ.get('COCOMASS_API_URL', 'http://127.0.0.1:5000')
             headers = {"Content-Type": "application/json"}
             data = data
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url+'/assessments', headers=headers, json=data)
     else:
         print(f'No assessment generate upon analyzing the changes for this commit.')
 
