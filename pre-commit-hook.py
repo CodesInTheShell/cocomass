@@ -8,7 +8,6 @@ import requests
 ### MODEL
 from typing import List
 from pydantic import BaseModel
-from ollama import chat
 from ollama import ChatResponse
 
 
@@ -82,8 +81,15 @@ def get_current_commit_hash():
 
 def call_ollama_api(content):
     """Send the code changes to Ollama for review."""
+    from ollama import Client
+
+    ollama_api_url = os.environ.get('OLLAMA_API_URL', 'http://localhost:11434')
+
+    client = Client(
+        host=ollama_api_url,
+    )
     
-    response: ChatResponse = chat(
+    response: ChatResponse = client.chat(
         model='llama3.2', 
         messages=[
             {
