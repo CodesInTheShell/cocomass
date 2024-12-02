@@ -12,15 +12,6 @@ from ollama import ChatResponse
 
 OLLAMA_MODEL = "llama3.2"
 
-
-### PROMPTS
-SYSTEM_PROMPTS = """You are a code reviewer.
-                    Analyze and point out any issues or suggestions for improvement. 
-                    Multiple assessment in one file is possible. 
-                    Your comment should be in markdown format. 
-                    You do not have to generate comment for a file if there is no issues or suggestion found.
-                    Assess criticality of the issue, the criticality should either be minor, moderate, major or critical."""
-
 class Assessment(BaseModel):
     filename: str
     comment: str
@@ -28,6 +19,20 @@ class Assessment(BaseModel):
 
 class Assessments(BaseModel):
     assessments: List[Assessment]
+
+
+### PROMPTS
+SYSTEM_PROMPTS = f"""You are a code reviewer.
+                    Analyze and point out any issues, security concerns or suggestions for improvement. 
+                    Multiple assessment in one file is possible. Skip the files that has no issues, security concerns or suggestions for improvement. 
+                    Your comment should be in markdown format. 
+                    You do not have to generate comment for a file if there is no issues or suggestion found.
+                    Assess criticality of the issue, the criticality should either be minor, moderate, major or critical.
+                    
+                    Response format should be {Assessments.model_json_schema()}
+                    """
+
+
 
 
 def get_git_diff():
@@ -87,19 +92,19 @@ def call_ollama_api(content):
 
     ollama_api_url = os.environ.get('OLLAMA_API_URL', 'http://localhost:11434')
 
-    client = Client(
+    ollama_client = Client(
         host=ollama_api_url
     )
 
     try:
-        ollama_show = ollama.show(OLLAMA_MODEL)
-        print(f'Ollama show model {OLLAMA_MODEL}: ', str(ollama_show))
+        ollama_show = ollama_client.show(OLLAMA_MODEL)
+        print(f'Ollama show model {OLLAMA_MODEL}')
     except:
         print(f'Ollama {OLLAMA_MODEL} model not found, pulling...')
-        ollama.pull(OLLAMA_MODEL)
+        ollama_client.pull(OLLAMA_MODEL)
         print(f'Finish pulling {OLLAMA_MODEL} model')
     
-    response: ChatResponse = client.chat(
+    response: ChatResponse = ollama_client.chat(
         model=OLLAMA_MODEL, 
         messages=[
             {
