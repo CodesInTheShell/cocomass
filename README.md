@@ -35,6 +35,4 @@ docker compose up --build
 Contact the author for more details or just drop an ticket or issue.
 www.dantebytes.com
 
-
-TODO
-to remove hash and message
+Watch demo on youtube: https://youtu.be/0Ck9jiO_CUE
