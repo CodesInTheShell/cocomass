@@ -7,6 +7,10 @@
 echo "Running pre-commit hook..."
 
 export OPENAI_API_KEY="sk-proj-YOUR_OPEN_AI_API_KEY"
+export COCOMASS_API_URL='http://127.0.0.1:5000'
+export COCOMASS_LLM='openai' # this can be ['openai', 'ollama']
+export OLLAMA_API_URL='http://localhost:11434'
+
 PYTHON_SCRIPT="/home/dantebytes/path/to/cocomass/pre-commit-hook.py"
 VENV_PATH="/home/dantebytes/path/to/cocomass/venv/bin/python"
 

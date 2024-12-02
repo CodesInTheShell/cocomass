@@ -43,7 +43,7 @@ export default {
             <template v-if="hasAssessments">
 
                 <div class="input-group input-group-sm mb-3">
-                    <span class="input-group-text" id="inputGroup-sizing-sm">Search by commit hash</span>
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Search by author email</span>
                     <input v-model="query" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                     <button type="button" class="btn btn-dark" @click="$emit('searchquery', query)">Search</button>
                 </div>
@@ -53,8 +53,8 @@ export default {
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">Filename and Criticality</th>
-                                <th scope="col">Commit Message</th>
-                                <th scope="col">Commit Hash</th>
+                                <th scope="col">Author name</th>
+                                <th scope="col">Author Email</th>
                                 <th scope="col">Created At</th>
                                 <th scope="col">Actions</th>
                             </tr>
@@ -78,8 +78,8 @@ export default {
                                         </span>
                                     </p>
                                 </td>
-                                <td>{{ assessment.commit_message || 'No commit message' }}</td>
-                                <td>{{ assessment.commit_hash || 'N/A' }}</td>
+                                <td>{{ assessment.author_name || 'No author name' }}</td>
+                                <td>{{ assessment.author_email || 'N/A' }}</td>
                                 <td>{{ assessment.created_at || 'N/A' }}</td>
                                 <td>
                                     <button class="btn btn-danger btn-sm m-2" @click="deleteAssessment(assessment._id)">Delete</button>

@@ -86,6 +86,22 @@ def get_current_commit_hash():
     except subprocess.CalledProcessError:
         return "HEAD not yet committed."
 
+def get_git_config(key):
+    """
+    author_name = get_git_config("user.name")
+    author_email = get_git_config("user.email")
+    """
+    try:
+        result = subprocess.run(
+            ["git", "config", key],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return "Unknown"
+
 def call_ollama_api(content):
     """Send the code changes to Ollama for review."""
     from ollama import Client
@@ -176,17 +192,22 @@ def main():
 
     ### Send to server
     assessments = reviews.get('assessments')
+    author_name = os.environ.get("GIT_AUTHOR_NAME", None)
+    author_email = os.environ.get("GIT_AUTHOR_EMAIL", None)
+    if not author_name:
+        author_name = get_git_config("user.name")
+    if not author_email:
+        author_email = get_git_config("user.email")
+
     if len(assessments) > 0:
         print(f'Sending {len(assessments)} number of assesment to the Cocomass server.')
-        commit_message = get_latest_commit_message()
-        commit_hash = get_current_commit_hash()
         for a in assessments:
             data = {
                 "filename": a.get('filename', ''),
                 "comment": a.get('comment', ''),
                 "criticality": a.get('criticality', ''),
-                "commit_message": commit_message,
-                "commit_hash": commit_hash,
+                "author_name": author_name,
+                "author_email": author_email,
             }
 
             url = os.environ.get('COCOMASS_API_URL', 'http://127.0.0.1:5000')
