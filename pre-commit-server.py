@@ -25,14 +25,14 @@ def ping():
 @app.route("/assessments", methods=["POST"])
 def create_assessment():
     data = request.json
-    if "filename" not in data or "comment" not in data or "commit_message" not in data or "commit_hash" not in data:
-        return jsonify({"error": "Fields 'filename', 'comment', 'commit_message', and 'commit_hash' are required"}), 400
+    if "filename" not in data or "comment" not in data or "author_name" not in data or "author_email" not in data:
+        return jsonify({"error": "Fields 'filename', 'comment', 'author_name', and 'author_email' are required"}), 400
 
     assessment = {
         "filename": data["filename"],
         "comment": data["comment"],
-        "commit_message": data["commit_message"],
-        "commit_hash": data["commit_hash"],
+        "author_name": data["author_name"],
+        "author_email": data["author_email"],
         "criticality": data.get("criticality", "minor"),
         "created_at": datetime.utcnow()
     }
@@ -49,7 +49,7 @@ def get_assessments():
     queryLimit = int(request.args.get('limit', 100))
 
     if queryValue:
-        query['commit_hash'] = queryValue
+        query['author_email'] = queryValue
 
     assessments = list(assessments_collection.find(query).sort("created_at", DESCENDING).limit(queryLimit))
     assessments = [serialize_doc(a) for a in assessments]
@@ -71,10 +71,10 @@ def update_assessment(assessment_id):
         update_fields["filename"] = data["filename"]
     if "comment" in data:
         update_fields["comment"] = data["comment"]
-    if "commit_message" in data:
-        update_fields["commit_message"] = data["commit_message"]
-    if "commit_hash" in data:
-        update_fields["commit_hash"] = data["commit_hash"]
+    if "author_name" in data:
+        update_fields["author_name"] = data["author_name"]
+    if "author_email" in data:
+        update_fields["author_email"] = data["author_email"]
     if "criticality" in data:
         update_fields["criticality"] = data["criticality"]
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     app.run('0.0.0.0', debug=True)
 
 ## Create
-# curl -X POST -H "Content-Type: application/json" -d '{"filename": "example.txt", "comment": "This is a test comment", "commit_message": "Initial commit", "criticality": "minor","commit_hash": "abc123"}' http://127.0.0.1:5000/assessments
+# curl -X POST -H "Content-Type: application/json" -d '{"filename": "example.txt", "comment": "This is a test comment", "author_name": "Initial commit", "criticality": "minor","author_email": "abc123"}' http://127.0.0.1:5000/assessments
 
 ## List all
 # curl http://127.0.0.1:5000/assessments
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 # curl http://127.0.0.1:5000/assessments/<assessment_id>
 
 ## Update
-# curl -X PUT -H "Content-Type: application/json" -d '{"comment": "Updated comment", "commit_message": "Updated commit", "commit_hash": "def456"}' http://127.0.0.1:5000/assessments/<assessment_id>
+# curl -X PUT -H "Content-Type: application/json" -d '{"comment": "Updated comment", "author_name": "Updated commit", "author_email": "def456"}' http://127.0.0.1:5000/assessments/<assessment_id>
 
 ## Delete
 # curl -X DELETE http://127.0.0.1:5000/assessments/<assessment_id>
