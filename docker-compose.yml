@@ -9,6 +9,7 @@ services:
       - "5000:5000"
     depends_on:
       - mongodb
+      - ollama
     volumes:
       - .:/app
 
@@ -20,9 +21,17 @@ services:
     expose:
       - "27107"
     volumes:
-      - ${MOUNTED_DATA}:/data/db/
+      - ${MOUNTED_DATA}/mounted-data:/data/db/
     logging:
       driver: "none"
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ${MOUNTED_DATA}/ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    expose:
+     - "11434"
 
 volumes:
   mongo-data:
