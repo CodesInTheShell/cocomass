@@ -10,6 +10,8 @@ from typing import List
 from pydantic import BaseModel
 from ollama import ChatResponse
 
+OLLAMA_MODEL = "llama3.2"
+
 
 ### PROMPTS
 SYSTEM_PROMPTS = """You are a code reviewer.
@@ -86,11 +88,19 @@ def call_ollama_api(content):
     ollama_api_url = os.environ.get('OLLAMA_API_URL', 'http://localhost:11434')
 
     client = Client(
-        host=ollama_api_url,
+        host=ollama_api_url
     )
+
+    try:
+        ollama_show = ollama.show(OLLAMA_MODEL)
+        print(f'Ollama show model {OLLAMA_MODEL}: ', str(ollama_show))
+    except:
+        print(f'Ollama {OLLAMA_MODEL} model not found, pulling...')
+        ollama.pull(OLLAMA_MODEL)
+        print(f'Finish pulling {OLLAMA_MODEL} model')
     
     response: ChatResponse = client.chat(
-        model='llama3.2', 
+        model=OLLAMA_MODEL, 
         messages=[
             {
                 'role': 'system',
